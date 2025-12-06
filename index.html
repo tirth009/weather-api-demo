@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>OpenWeatherMap API Demo</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="container">
+    <h1>City Weather Lookup</h1>
+    <p class="subtitle">
+      Demo using the 
+      <a href="https://openweathermap.org/current" target="_blank" rel="noopener">
+        OpenWeatherMap Current Weather Data API
+      </a>.
+    </p>
+
+    <section class="card">
+      <form id="weather-form">
+        <label for="city-input">Enter a city name:</label>
+        <div class="input-row">
+          <input 
+            id="city-input" 
+            type="text" 
+            placeholder="e.g. Barrie,CA or Toronto,CA" 
+            required
+          >
+          <button type="submit">Get Weather</button>
+        </div>
+      </form>
+
+      <p class="hint">
+        This page will use the OpenWeatherMap REST API and JavaScript 
+        <code>fetch()</code> to request JSON data and display it.
+      </p>
+
+      <section id="error" class="error hidden"></section>
+
+      <section id="results" class="results hidden">
+        <h2 id="city-name"></h2>
+        <p id="description" class="description"></p>
+
+        <div class="temp-row">
+          <p id="temperature" class="temp-main"></p>
+          <p id="feels-like" class="temp-secondary"></p>
+        </div>
+
+        <ul class="details">
+          <li id="humidity"></li>
+          <li id="wind"></li>
+          <li id="clouds"></li>
+        </ul>
+
+        <p id="sun-times" class="sun-times"></p>
+      </section>
+    </section>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
