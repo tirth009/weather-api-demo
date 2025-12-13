@@ -8,6 +8,9 @@ const cityInput = document.getElementById("city-input");
 const resultsSection = document.getElementById("results");
 const errorSection = document.getElementById("error");
 const loadingEl = document.getElementById("loading");
+const recentSection = document.getElementById("recent");
+const recentButtons = document.getElementById("recent-buttons");
+
 
 const cityNameEl = document.getElementById("city-name");
 const descriptionEl = document.getElementById("description");
@@ -44,6 +47,40 @@ function showLoading(show) {
 function showError(message) {
   errorSection.textContent = message;
   errorSection.classList.remove("hidden");
+}
+// ====== RECENT SEARCHES (localStorage) ======
+function getRecentCities() {
+  return JSON.parse(localStorage.getItem("recentCities")) || [];
+}
+
+function saveRecentCity(city) {
+  let cities = getRecentCities();
+  cities = [city, ...cities.filter(c => c !== city)].slice(0, 5);
+  localStorage.setItem("recentCities", JSON.stringify(cities));
+  renderRecentCities();
+}
+
+function renderRecentCities() {
+  const cities = getRecentCities();
+  recentButtons.innerHTML = "";
+
+  if (cities.length === 0) {
+    recentSection.classList.add("hidden");
+    return;
+  }
+
+  cities.forEach(city => {
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.textContent = city;
+    btn.addEventListener("click", () => {
+      cityInput.value = city;
+      getWeather(city);
+    });
+    recentButtons.appendChild(btn);
+  });
+
+  recentSection.classList.remove("hidden");
 }
 
 // ====== FETCH WEATHER DATA ======
@@ -93,6 +130,7 @@ function displayWeather(data) {
   windEl.textContent = `Wind Speed: ${data.wind.speed} ${windUnits}`;
   cloudsEl.textContent = `Cloud Coverage: ${data.clouds.all}%`;
   sunTimesEl.textContent = `Sunrise: ${sunriseTime} • Sunset: ${sunsetTime}`;
+saveRecentCity(`${data.name}, ${data.sys.country}`);
 
   resultsSection.classList.remove("hidden");
 }
@@ -113,3 +151,4 @@ document.querySelectorAll('input[name="units"]').forEach((radio) => {
     if (city) getWeather(city);
   });
 });
+renderRecentCities();

@@ -89,3 +89,24 @@ button:hover { background: rgba(122, 199, 255, 0.28); }
   .input-row { flex-direction: column; align-items: stretch; }
   button { width: 100%; }
 }
+.recent {
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid #252f45;
+}
+
+.recent-title {
+  margin: 0 0 0.5rem;
+  opacity: 0.85;
+}
+
+#recent-buttons button {
+  margin: 0.25rem 0.25rem 0 0;
+  padding: 0.4rem 0.75rem;
+  border-radius: 999px;
+  border: 1px solid #2a3857;
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
