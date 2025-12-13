@@ -9,8 +9,9 @@
 <body>
   <main class="container">
     <h1>City Weather Lookup</h1>
+
     <p class="subtitle">
-      Demo using the 
+      Demo using the
       <a href="https://openweathermap.org/current" target="_blank" rel="noopener">
         OpenWeatherMap Current Weather Data API
       </a>.
@@ -19,23 +20,41 @@
     <section class="card">
       <form id="weather-form">
         <label for="city-input">Enter a city name:</label>
+
         <div class="input-row">
-          <input 
-            id="city-input" 
-            type="text" 
-            placeholder="e.g. Barrie,CA or Toronto,CA" 
+          <input
+            id="city-input"
+            type="text"
+            placeholder="e.g. Barrie,CA or Toronto,CA"
             required
           >
           <button type="submit">Get Weather</button>
         </div>
+
+        <!-- Unit Toggle (Take It Further) -->
+        <div class="unit-row" aria-label="Temperature Units">
+          <label>
+            <input type="radio" name="units" value="metric" checked>
+            Celsius
+          </label>
+          <label>
+            <input type="radio" name="units" value="imperial">
+            Fahrenheit
+          </label>
+        </div>
       </form>
 
       <p class="hint">
-        This page will use the OpenWeatherMap REST API and JavaScript 
+        This page will use the OpenWeatherMap REST API and JavaScript
         <code>fetch()</code> to request JSON data and display it.
       </p>
 
-      <section id="error" class="error hidden"></section>
+      <!-- Loading UI (Take It Further) -->
+      <p id="loading" class="loading hidden" aria-live="polite">
+        Loading weather data…
+      </p>
+
+      <section id="error" class="error hidden" aria-live="assertive"></section>
 
       <section id="results" class="results hidden">
         <h2 id="city-name"></h2>
@@ -55,6 +74,15 @@
         <p id="sun-times" class="sun-times"></p>
       </section>
     </section>
+
+    <!-- Academic Integrity / Attribution -->
+    <footer class="footer">
+      <p>
+        Documentation used:
+        <a href="https://openweathermap.org/current" target="_blank" rel="noopener">Current Weather API</a> •
+        <a href="https://openweathermap.org/api" target="_blank" rel="noopener">OpenWeather API Docs</a>
+      </p>
+    </footer>
   </main>
 
   <script src="app.js"></script>
