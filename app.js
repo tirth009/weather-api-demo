@@ -7,6 +7,7 @@ const form = document.getElementById("weather-form");
 const cityInput = document.getElementById("city-input");
 const resultsSection = document.getElementById("results");
 const errorSection = document.getElementById("error");
+const loadingEl = document.getElementById("loading");
 
 const cityNameEl = document.getElementById("city-name");
 const descriptionEl = document.getElementById("description");
@@ -17,6 +18,9 @@ const windEl = document.getElementById("wind");
 const cloudsEl = document.getElementById("clouds");
 const sunTimesEl = document.getElementById("sun-times");
 
+// ====== STATE ======
+let currentUnits = "metric"; // metric = Celsius, imperial = Fahrenheit
+
 // ====== TIME FORMATTER ======
 function formatTimeFromUnix(timestamp, timezoneOffsetSeconds) {
   const localMillis = (timestamp + timezoneOffsetSeconds) * 1000;
@@ -24,14 +28,30 @@ function formatTimeFromUnix(timestamp, timezoneOffsetSeconds) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
 }
 
-// ====== FETCH WEATHER DATA ======
-async function getWeather(city) {
-  const url = `${BASE_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=metric`;
-
-  // Reset UI before new request
+// ====== UI HELPERS ======
+function resetUIForRequest() {
   errorSection.textContent = "";
   errorSection.classList.add("hidden");
   resultsSection.classList.add("hidden");
+}
+
+function showLoading(show) {
+  if (!loadingEl) return;
+  if (show) loadingEl.classList.remove("hidden");
+  else loadingEl.classList.add("hidden");
+}
+
+function showError(message) {
+  errorSection.textContent = message;
+  errorSection.classList.remove("hidden");
+}
+
+// ====== FETCH WEATHER DATA ======
+async function getWeather(city) {
+  const url = `${BASE_URL}?q=${encodeURIComponent(city)}&appid=${API_KEY}&units=${currentUnits}`;
+
+  resetUIForRequest();
+  showLoading(true);
 
   try {
     const response = await fetch(url);
@@ -49,8 +69,9 @@ async function getWeather(city) {
     const data = await response.json();
     displayWeather(data);
   } catch (error) {
-    errorSection.textContent = error.message;
-    errorSection.classList.remove("hidden");
+    showError(error.message);
+  } finally {
+    showLoading(false);
   }
 }
 
@@ -60,22 +81,35 @@ function displayWeather(data) {
   const sunriseTime = formatTimeFromUnix(data.sys.sunrise, timezoneOffset);
   const sunsetTime = formatTimeFromUnix(data.sys.sunset, timezoneOffset);
 
+  const unitSymbol = currentUnits === "imperial" ? "°F" : "°C";
+  const windUnits = currentUnits === "imperial" ? "mph" : "m/s";
+
   cityNameEl.textContent = `${data.name}, ${data.sys.country}`;
   descriptionEl.textContent = data.weather[0].description;
-  temperatureEl.textContent = `Temperature: ${Math.round(data.main.temp)} °C`;
-  feelsLikeEl.textContent = `Feels like: ${Math.round(data.main.feels_like)} °C`;
+
+  temperatureEl.textContent = `Temperature: ${Math.round(data.main.temp)} ${unitSymbol}`;
+  feelsLikeEl.textContent = `Feels like: ${Math.round(data.main.feels_like)} ${unitSymbol}`;
   humidityEl.textContent = `Humidity: ${data.main.humidity}%`;
-  windEl.textContent = `Wind Speed: ${data.wind.speed} m/s`;
+  windEl.textContent = `Wind Speed: ${data.wind.speed} ${windUnits}`;
   cloudsEl.textContent = `Cloud Coverage: ${data.clouds.all}%`;
   sunTimesEl.textContent = `Sunrise: ${sunriseTime} • Sunset: ${sunsetTime}`;
 
   resultsSection.classList.remove("hidden");
 }
 
-// ====== FORM HANDLER ======
+// ====== EVENTS ======
 form.addEventListener("submit", (event) => {
   event.preventDefault();
   const city = cityInput.value.trim();
   if (!city) return;
   getWeather(city);
+});
+
+// Unit toggle radios
+document.querySelectorAll('input[name="units"]').forEach((radio) => {
+  radio.addEventListener("change", (e) => {
+    currentUnits = e.target.value;
+    const city = cityInput.value.trim();
+    if (city) getWeather(city);
+  });
 });
